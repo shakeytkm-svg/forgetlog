@@ -5,6 +5,8 @@ console.log('ForgetLog 启动');
 const TAGS = ['切换场景', '到家', '下车', '出门', '刚刷完手机'];
 // 当前选中标签
 let selectedTags = new Set();
+// 编辑模式：非 null 表示正在编辑该 id 的记录
+let editingId = null;
 
 // ---- 屏切换 ----
 function showScreen(id) {
@@ -48,21 +50,32 @@ function renderTagChips() {
 // ---- 记录页：保存 ----
 async function saveEntry() {
   const text = document.getElementById('entry-text').value.trim();
-  // 03 验收：可全不选也能保存
   const tags = Array.from(selectedTags);
-  // 文本空也允许？spec 未禁止，但空记录无意义，这里兜底：空文本不保存
   if (!text) {
     showToast('没写内容');
     return;
   }
   try {
-    await addEntry({ text, tags });   // created_at 由 02 自动生成
-    // 清空
+    if (editingId) {
+      await updateEntry(editingId, { text, tags });   // 更新（保留 created_at）
+      showToast('已更新');
+    } else {
+      await addEntry({ text, tags });                   // 新建
+      showToast('已记');
+    }
+    // 清空 + 退出编辑模式
     document.getElementById('entry-text').value = '';
     selectedTags.clear();
-    // 回主页 + 提示 + 刷新
-    showScreen('screen-home');
-    showToast('已记');
+    const wasEditing = editingId;
+    editingId = null;
+    document.querySelector('#screen-entry .app-header h1').textContent = '记一笔';
+    document.getElementById('btn-save').textContent = '保存';
+    if (wasEditing) {
+      showScreen('screen-board');
+      await renderBoard();
+    } else {
+      showScreen('screen-home');
+    }
     refreshWeekCount();
   } catch (err) {
     console.error('保存失败:', err);
@@ -302,7 +315,18 @@ function makeBarRow(label, count, max) {
   return row;
 }
 
-// 生成一条记录项：时间 + 文字 + 标签 + 删除按钮
+// 开始编辑一条记录（复用记录页）
+function startEdit(entry) {
+  editingId = entry.id;
+  document.getElementById('entry-text').value = entry.text || '';
+  selectedTags = new Set(entry.tags || []);
+  document.querySelector('#screen-entry .app-header h1').textContent = '编辑';
+  document.getElementById('btn-save').textContent = '更新';
+  renderTagChips();
+  showScreen('screen-entry');
+}
+
+// 生成一条记录项：时间 + 文字 + 标签 + 编辑/删除按钮
 function makeEntryItem(entry) {
   const li = document.createElement('li');
   li.className = 'entry-item';
@@ -319,15 +343,26 @@ function makeEntryItem(entry) {
   tags.className = 'entry-tags';
   tags.textContent = (entry.tags || []).join(' / ');
 
+  const actions = document.createElement('div');
+  actions.className = 'entry-actions';
+
+  const edit = document.createElement('button');
+  edit.className = 'entry-edit';
+  edit.textContent = '编辑';
+  edit.addEventListener('click', () => startEdit(entry));
+
   const del = document.createElement('button');
   del.className = 'entry-del';
   del.textContent = '删除';
   del.addEventListener('click', () => askDelete(entry));
 
+  actions.appendChild(edit);
+  actions.appendChild(del);
+
   li.appendChild(time);
   li.appendChild(text);
   li.appendChild(tags);
-  li.appendChild(del);
+  li.appendChild(actions);
   return li;
 }
 
@@ -369,11 +404,21 @@ function cancelDelete() {
 
 // ---- 事件绑定 ----
 document.getElementById('btn-add').addEventListener('click', () => {
+  // 新建模式：清空 + 重置标题/按钮
+  editingId = null;
+  document.getElementById('entry-text').value = '';
+  selectedTags.clear();
+  document.querySelector('#screen-entry .app-header h1').textContent = '记一笔';
+  document.getElementById('btn-save').textContent = '保存';
   renderTagChips();
   showScreen('screen-entry');
 });
 
 document.getElementById('btn-back').addEventListener('click', () => {
+  // 退出编辑模式
+  editingId = null;
+  document.querySelector('#screen-entry .app-header h1').textContent = '记一笔';
+  document.getElementById('btn-save').textContent = '保存';
   showScreen('screen-home');
 });
 

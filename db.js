@@ -112,6 +112,27 @@ async function deleteEntry(id) {
   });
 }
 
+// 更新一条（保留 id / created_at，覆盖 text / tags）
+async function updateEntry(id, { text, tags }) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const getReq = store.get(id);
+    getReq.onsuccess = () => {
+      const existing = getReq.result;
+      if (!existing) { reject(new Error('记录不存在')); return; }
+      existing.text = text;
+      existing.tags = Array.isArray(tags) ? tags : [];
+      // created_at 保留不变
+      const putReq = store.put(existing);
+      putReq.onsuccess = () => resolve(existing);
+      putReq.onerror = () => reject(putReq.error);
+    };
+    getReq.onerror = () => reject(getReq.error);
+  });
+}
+
 // 统计
 // 返回 { weekCount, byTag, byWeekday }
 //   weekCount  本周（周一 00:00 起）条数

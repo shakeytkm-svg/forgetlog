@@ -429,10 +429,32 @@ textarea:focus {
   display: none;
 }
 
-.entry-del {
+/* 编辑/删除按钮组（看板记录项右侧） */
+.entry-actions {
   grid-column: 2;
   grid-row: 1 / span 3;
   align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.entry-edit {
+  font-size: 14px;
+  padding: 8px 14px;
+  min-height: 36px;
+  border: 1px solid var(--theme);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--theme);
+  cursor: pointer;
+}
+
+.entry-edit:active {
+  background: #eef0fb;
+}
+
+.entry-del {
   font-size: 14px;
   padding: 8px 14px;
   min-height: 36px;
