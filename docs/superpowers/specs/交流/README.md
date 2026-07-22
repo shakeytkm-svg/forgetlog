@@ -12,7 +12,8 @@
 ## 总约束（每条提示词都默认遵守，不用重复跟 Trae 说）
 
 - 纯 **vanilla JS**，不引框架（React / Vue / jQuery 都不要）。
-- **无构建步骤**（不装 npm / Vite / webpack），浏览器直接打开 `index.html` 就能跑。
+- **无构建步骤**（不装 npm / Vite / webpack）。
+- **必须用本地服务器跑**：`python -m http.server 8000` 或 VS Code Live Server，访问 `http://localhost:8000`。**别用 `file://` 直接打开**——Service Worker 在 file:// 下无法注册，IndexedDB 也受限，离线和「安装」都会失败。所有验收都在 localhost 下做。
 - 存储用 **IndexedDB**（不用 localStorage）。
 - 单文件夹项目，文件平铺，别套深目录。
 - **中文界面**，**移动端优先**（竖屏、大按钮、触摸友好、字号别太小）。
