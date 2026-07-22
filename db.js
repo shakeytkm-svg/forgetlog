@@ -77,6 +77,30 @@ async function listEntries(limit = 10) {
   });
 }
 
+// 列出今天的条目（created_at >= 今天本地 00:00，倒序）
+async function listTodayEntries() {
+  const db = await openDB();
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);              // 今天 00:00（本地）
+  const lowerBound = start.toISOString();   // 转 UTC ISO，字符串比较即可
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const idx = tx.objectStore(STORE_NAME).index('created_at');
+    const result = [];
+    const req = idx.openCursor(IDBKeyRange.lowerBound(lowerBound), 'prev');
+    req.onsuccess = (e) => {
+      const cursor = e.target.result;
+      if (cursor) {
+        result.push(cursor.value);
+        cursor.continue();
+      } else {
+        resolve(result);
+      }
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
 // 按 id 删除一条
 async function deleteEntry(id) {
   const db = await openDB();

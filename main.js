@@ -178,8 +178,45 @@ function stopVoice(e) {
   }
 }
 
-// ---- 切场检查弹窗（纯提醒，不存数据）----
-function openCheckOverlay() {
+// ---- 切场检查弹窗（提醒 + 显示今天已记）----
+async function openCheckOverlay() {
+  const todayEl = document.getElementById('check-today');
+  todayEl.innerHTML = '';
+  try {
+    const today = await listTodayEntries();
+    if (today.length === 0) {
+      todayEl.innerHTML = '<p class="empty">今天还没记</p>';
+    } else {
+      const title = document.createElement('p');
+      title.className = 'check-today-title';
+      title.textContent = '今天已记 ' + today.length + ' 笔';
+      todayEl.appendChild(title);
+      today.forEach(entry => {
+        const item = document.createElement('div');
+        item.className = 'check-today-item';
+
+        const time = document.createElement('span');
+        time.className = 'ct-time';
+        time.textContent = formatTime(entry.created_at);
+
+        const text = document.createElement('span');
+        text.className = 'ct-text';
+        text.textContent = entry.text;
+
+        const tags = document.createElement('span');
+        tags.className = 'ct-tags';
+        tags.textContent = (entry.tags || []).join(' / ');
+
+        item.appendChild(time);
+        item.appendChild(text);
+        item.appendChild(tags);
+        todayEl.appendChild(item);
+      });
+    }
+  } catch (err) {
+    console.error('读取今日记录失败:', err);
+    todayEl.innerHTML = '<p class="empty">读取失败</p>';
+  }
   document.getElementById('check-overlay').classList.remove('hidden');
 }
 function closeCheckOverlay() {

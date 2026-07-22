@@ -1,5 +1,5 @@
 // sw.js — service worker，离线缓存核心文件
-const CACHE_NAME = 'forgetlog-v2';   // v2: 06 收尾，补 icon.png 进缓存
+const CACHE_NAME = 'forgetlog-v3';   // v3: 切场检查显示今日已记（内容更新，刷新缓存）
 const CACHE_URLS = [
   './',
   './index.html',

@@ -269,6 +269,51 @@ textarea:focus {
   flex: 1;
 }
 
+/* ---- 切场检查：今日已记列表 ---- */
+.check-today {
+  max-height: 40vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.check-today-title {
+  font-size: 15px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.check-today-item {
+  padding: 10px 12px;
+  background: #f9f9fb;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.check-today-item .ct-time {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.check-today-item .ct-text {
+  font-size: 17px;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.check-today-item .ct-tags {
+  font-size: 13px;
+  color: var(--theme);
+}
+
+.check-today-item .ct-tags:empty {
+  display: none;
+}
+
 /* ---- 看板 ---- */
 .board-main {
   gap: 24px;
