@@ -10,7 +10,7 @@
 - `sw.js`：基础 service worker，安装时缓存 `index.html` / `main.js` / `db.js` / `style.css`，做离线。
 - `style.css`：移动端基础样式，大字号、大按钮、触摸友好。
 - `main.js`：入口，先 `console.log('ForgetLog 启动')` 确认跑通；注册 service worker。
-- `db.js`：打开 IndexedDB 库 `forgetlog`，版本 1，建一个 object store `entries`（`keyPath='id'`，并建 `createdAt` 索引）。封装成 `openDB()` 返回 Promise。
+- `db.js`：打开 IndexedDB 库 `forgetlog`，版本 1，建一个 object store `entries`（`keyPath='id'`，并建 `created_at` 索引（与设计文档数据模型一致，全项目统一用下划线））。封装成 `openDB()` 返回 Promise。
 
 ## 约束
 见 README 总约束。**别装任何依赖**，别引 CDN 框架。
