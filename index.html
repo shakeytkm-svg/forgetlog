@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <!-- 移动优先 viewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>忘事日记</title>
+  <!-- PWA 清单 -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#6b7fd7">
+  <link rel="apple-touch-icon" href="./icon.png">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <!-- 屏1 · 主页 -->
+  <section id="screen-home" class="screen">
+    <header class="app-header">
+      <h1>忘事日记</h1>
+    </header>
+    <main class="app-main">
+      <button id="btn-add" class="btn-primary">记一笔忘事</button>
+      <button id="btn-check" class="btn-secondary">切场检查</button>
+      <button id="btn-board" class="btn-secondary">看板</button>
+    </main>
+    <footer class="app-footer">
+      本周已记 <span id="week-count">0</span> 笔
+    </footer>
+  </section>
+
+  <!-- 屏2 · 记录页 -->
+  <section id="screen-entry" class="screen hidden">
+    <header class="app-header">
+      <button id="btn-back" class="btn-back" aria-label="返回">←</button>
+      <h1>记一笔</h1>
+    </header>
+    <main class="app-main">
+      <!-- 语音按钮（不支持时由 JS 隐藏） -->
+      <button id="btn-voice" class="btn-voice">🎤 按住说话</button>
+      <!-- 中间结果实时显示 -->
+      <div id="voice-interim" class="voice-interim hidden"></div>
+      <!-- 不支持时的提示（默认隐藏，由 JS 显示） -->
+      <p id="voice-unsupported" class="voice-unsupported hidden">本设备不支持语音，可手打</p>
+      <textarea id="entry-text" placeholder="忘了啥？" rows="5"></textarea>
+      <div id="tag-chips" class="tag-chips"></div>
+    </main>
+    <footer class="app-footer">
+      <button id="btn-save" class="btn-primary">保存</button>
+    </footer>
+  </section>
+
+  <!-- 轻提示 -->
+  <div id="toast" class="toast hidden">已记</div>
+
+  <!-- 屏3 · 看板 -->
+  <section id="screen-board" class="screen hidden">
+    <header class="app-header">
+      <button id="btn-board-back" class="btn-back" aria-label="返回">←</button>
+      <h1>看板</h1>
+    </header>
+    <main class="app-main board-main">
+      <!-- 本周数 -->
+      <div class="board-big">
+        本周 <span id="board-week">0</span> 笔
+      </div>
+      <!-- 按场景分布 -->
+      <section class="board-section">
+        <h2>按场景分布</h2>
+        <div id="board-by-tag" class="bar-list"></div>
+      </section>
+      <!-- 按星期几分布 -->
+      <section class="board-section">
+        <h2>按星期几分布</h2>
+        <div id="board-by-weekday" class="bar-list"></div>
+      </section>
+      <!-- 最近 10 条 -->
+      <section class="board-section">
+        <h2>最近 10 条</h2>
+        <ul id="board-recent" class="entry-list"></ul>
+      </section>
+    </main>
+  </section>
+
+  <!-- 切场检查弹窗（全屏遮罩） -->
+  <div id="check-overlay" class="overlay hidden">
+    <div class="overlay-box">
+      <p class="overlay-text">带东西了吗？有要办的吗？</p>
+      <button id="btn-check-done" class="btn-primary">过完了</button>
+    </div>
+  </div>
+
+  <!-- 删除二次确认弹窗 -->
+  <div id="delete-overlay" class="overlay hidden">
+    <div class="overlay-box">
+      <p class="overlay-text">删掉这一条？</p>
+      <div class="overlay-actions">
+        <button id="btn-delete-cancel" class="btn-secondary">取消</button>
+        <button id="btn-delete-confirm" class="btn-primary">删除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 顺序加载：先 db.js，再 main.js（共享全局作用域） -->
+  <script src="./db.js"></script>
+  <script src="./main.js"></script>
+</body>
+</html>
